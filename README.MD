@@ -4,7 +4,7 @@
 
 2. Place below code in between <broker> tag of conf/activemq.xml
 <plugins>
- 	<bean xmlns="http://www.springframework.org/schema/beans" class="org.apache.activemq.broker.scheduler.mongo.MongoScheduledBroker" init-method="start" destroy-method="stop">
+ 	<bean xmlns="http://www.springframework.org/schema/beans" class="org.apache.activemq.broker.scheduler.mongo.MongoSchedulerBroker" init-method="start" destroy-method="stop">
  		<!-- mongo host -->
  		<constructor-arg value="127.0.0.1" />
  		<!-- mongo port -->
