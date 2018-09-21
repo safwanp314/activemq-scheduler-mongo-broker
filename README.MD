@@ -19,6 +19,7 @@
  		</constructor-arg>
  	</bean>
  </plugins>
+ 
 3. replace host and port accordingly
 
 4. set long property AMQ_SCHEDULED_DELAY with delay value while sending message
