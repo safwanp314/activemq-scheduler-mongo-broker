@@ -1,0 +1,19 @@
+# maven
+/target/
+/deployment/
+
+# eclipse
+/bin/
+.settings
+*.classpath
+*.project
+
+# netbeans
+nbproject/private/
+build/
+nbbuild/
+dist/
+nbdist/
+.nb-gradle/
+nb-configuration.xml
+/nbactions.xml
