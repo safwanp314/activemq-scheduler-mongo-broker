@@ -22,6 +22,6 @@
  
 3. replace host and port accordingly
 
-4. set long property AMQ_SCHEDULED_DELAY with delay value while sending message
+4. set long property AMQ_SCHEDULED_DELAY with delay value while sending message <br/>
 example:
 curl -XPOST -d "body=message" -d "AMQ_SCHEDULED_DELAY=60000" http://admin:admin@localhost:8161/api/message?destination=queue://test.input
