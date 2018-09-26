@@ -323,59 +323,68 @@ public class MongoJobScheduler implements JobScheduler {
 		@Override
 		public void run() {
 
-			try {
-				while (true) {
+			while (true) {
+				try {
+
+					if (!started.get()) {
+						break;
+					}
 
 					long curr = System.currentTimeMillis(), prev, diff;
-					LOG.debug("finding sceduled messages in database at {}", curr);
-					MongoCursor<Document> it = mongoCollection().find(Filters.lte("nextTime", new Date(curr)))
-							.batchSize(5000).iterator();
-					LOG.debug("finding sceduled messages cursor {}", it.hasNext());
-					while (it.hasNext()) {
-						Document document = it.next();
-						LOG.debug("finding sceduled messages document {}", document);
 
-						try {
-							long currentTime = System.currentTimeMillis(), nextExecutionTime;
-							MongoJob job = new MongoJob(document);
+					if (dispatchEnabled.get()) {
 
-							int repeat = job.getRepeat();
-							nextExecutionTime = calculateNextExecutionTime(job, currentTime, repeat);
-							if (!job.isCron()) {
-								dispatch(job);
-								if (repeat != 0) {
-									// Reschedule for the next time, the scheduler will take care of
-									// updating the repeat counter on the update.
-									doReschedule(job, nextExecutionTime);
-								} else {
-									doRemoveJob(document);
-								}
-							} else {
-								if (repeat == 0) {
-									// This is a non-repeating Cron entry so we can fire and forget it.
+						LOG.debug("finding sceduled messages in database at {}", curr);
+						MongoCursor<Document> it = mongoCollection().find(Filters.lte("nextTime", new Date(curr)))
+								.batchSize(5000).iterator();
+						LOG.debug("finding sceduled messages cursor {}", it.hasNext());
+						while (it.hasNext()) {
+							Document document = it.next();
+							LOG.debug("finding sceduled messages document {}", document);
+
+							try {
+								long currentTime = System.currentTimeMillis(), nextExecutionTime;
+								MongoJob job = new MongoJob(document);
+
+								int repeat = job.getRepeat();
+								nextExecutionTime = calculateNextExecutionTime(job, currentTime, repeat);
+								if (!job.isCron()) {
 									dispatch(job);
-									doRemoveJob(document);
-								}
-
-								if (nextExecutionTime > currentTime) {
-									// Reschedule the cron job as a new event, if the cron entry signals
-									// a repeat then it will be stored separately and fired as a normal
-									// event with decrementing repeat.
-									doReschedule(job, nextExecutionTime);
-
 									if (repeat != 0) {
-										// we have a separate schedule to run at this time
-										// so the cron job is used to set of a separate schedule
-										// hence we won't fire the original cron job to the
-										// listeners but we do need to start a separate schedule
-										String jobId = ID_GENERATOR.generateId();
-										ByteSequence payload = new ByteSequence(job.getPayload());
-										schedule(jobId, payload, "", job.getDelay(), job.getPeriod(), job.getRepeat());
+										// Reschedule for the next time, the scheduler will take care of
+										// updating the repeat counter on the update.
+										doReschedule(job, nextExecutionTime);
+									} else {
+										doRemoveJob(document);
+									}
+								} else {
+									if (repeat == 0) {
+										// This is a non-repeating Cron entry so we can fire and forget it.
+										dispatch(job);
+										doRemoveJob(document);
+									}
+
+									if (nextExecutionTime > currentTime) {
+										// Reschedule the cron job as a new event, if the cron entry signals
+										// a repeat then it will be stored separately and fired as a normal
+										// event with decrementing repeat.
+										doReschedule(job, nextExecutionTime);
+
+										if (repeat != 0) {
+											// we have a separate schedule to run at this time
+											// so the cron job is used to set of a separate schedule
+											// hence we won't fire the original cron job to the
+											// listeners but we do need to start a separate schedule
+											String jobId = ID_GENERATOR.generateId();
+											ByteSequence payload = new ByteSequence(job.getPayload());
+											schedule(jobId, payload, "", job.getDelay(), job.getPeriod(),
+													job.getRepeat());
+										}
 									}
 								}
+							} catch (Exception e) {
+								LOG.error("error in mongo scheduler", e);
 							}
-						} catch (Exception e) {
-							LOG.error("error in mongo scheduler", e);
 						}
 					}
 					prev = curr;
@@ -384,9 +393,9 @@ public class MongoJobScheduler implements JobScheduler {
 					if (diff > 0) {
 						Thread.sleep(diff);
 					}
+				} catch (Exception e) {
+					LOG.error("thread interrupted", e);
 				}
-			} catch (Exception e) {
-				LOG.error("thread interrupted", e);
 			}
 		}
 	}
