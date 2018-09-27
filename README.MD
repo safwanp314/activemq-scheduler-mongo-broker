@@ -3,6 +3,8 @@
 1. Place activemq-scheduled-message-broker.jar and mongo-java-driver.jar into lib directory of activemq
 
 2. Place below code in between <broker> tag of conf/activemq.xml
+
+```xml
 <plugins>
  	<bean xmlns="http://www.springframework.org/schema/beans" class="org.apache.activemq.broker.scheduler.mongo.MongoSchedulerBroker" init-method="start" destroy-method="stop">
  		<!-- mongo host -->
@@ -19,7 +21,8 @@
  		</constructor-arg>
  	</bean>
  </plugins>
- 
+``` 
+
 3. Configure mongodb host and port
 
 4. Set property AMQ_SCHEDULED_DELAY with delay value while sending message in to activemq <br/>
