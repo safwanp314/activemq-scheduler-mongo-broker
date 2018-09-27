@@ -24,8 +24,6 @@
  </plugins>
 ``` 
 
-3. Configure mongodb host and port
-
-4. Set property AMQ_SCHEDULED_DELAY with delay value while sending message in to activemq <br/>
+3. Set property AMQ_SCHEDULED_DELAY with delay value while sending message in to activemq <br/>
 example:
 curl -XPOST -d "body=message" -d "AMQ_SCHEDULED_DELAY=60000" http://admin:admin@localhost:8161/api/message?destination=queue://test.input
