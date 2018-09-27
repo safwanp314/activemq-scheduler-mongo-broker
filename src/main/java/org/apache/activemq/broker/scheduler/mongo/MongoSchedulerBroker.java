@@ -8,7 +8,16 @@ import org.apache.activemq.broker.scheduler.SchedulerBroker;
 
 public class MongoSchedulerBroker implements BrokerPlugin {
 
-	private final MongoJobSchedulerStore jobSchedulerStore;
+	private MongoJobSchedulerStore jobSchedulerStore;
+
+	private String host;
+	private int port;
+	private String database;
+	private Map<String, String> props;
+
+	public MongoSchedulerBroker() {
+		this(null, 0, null);
+	}
 
 	public MongoSchedulerBroker(String host, int port, String database) {
 		this(host, port, database, null);
@@ -24,12 +33,52 @@ public class MongoSchedulerBroker implements BrokerPlugin {
 		if (database == null)
 			database = "activemq-broker";
 
-		jobSchedulerStore = new MongoJobSchedulerStore(host, port, database, props);
+		this.host = host;
+		this.port = port;
+		this.database = database;
+		this.props = props;
+
+	}
+
+	public String getHost() {
+		return host;
+	}
+
+	public void setHost(String host) {
+		this.host = host;
+	}
+
+	public int getPort() {
+		return port;
+	}
+
+	public void setPort(int port) {
+		this.port = port;
+	}
+
+	public String getDatabase() {
+		return database;
+	}
+
+	public void setDatabase(String database) {
+		this.database = database;
+	}
+
+	public Map<String, String> getProps() {
+		return props;
+	}
+
+	public void setProps(Map<String, String> props) {
+		this.props = props;
 	}
 
 	@Override
 	public Broker installPlugin(Broker broker) throws Exception {
 		return new SchedulerBroker(broker.getBrokerService(), broker, jobSchedulerStore);
+	}
+
+	public void afterPropertiesSet() {
+		jobSchedulerStore = new MongoJobSchedulerStore(host, port, database, props);
 	}
 
 	public void start() throws Exception {
