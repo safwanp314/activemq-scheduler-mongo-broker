@@ -15,11 +15,11 @@
  		<property name="database" value="activemq-broker" />
  		<!-- mongo connection properties -->
  		<property name="props">
- 		   <map>
- 				   <entry key="connectionsPerHost" value="200"></entry>
- 				   <entry key="minConnectionsPerHost" value="10"></entry>
- 			   </map>
- 		</property>
+    <map>
+     <entry key="connectionsPerHost" value="200"></entry>
+     <entry key="minConnectionsPerHost" value="10"></entry>
+    </map>
+   </property>
  	</bean>
  </plugins>
 ``` 
