@@ -8,17 +8,18 @@
 <plugins>
  	<bean xmlns="http://www.springframework.org/schema/beans" class="org.apache.activemq.broker.scheduler.mongo.MongoSchedulerBroker" init-method="start" destroy-method="stop">
  		<!-- mongo host -->
- 		<constructor-arg value="127.0.0.1" />
+ 		<property name="host" value="127.0.0.1" />
  		<!-- mongo port -->
- 		<constructor-arg value="27017" />
+ 		<property name="port" value="27017" />
  		<!-- mongo activemq database -->
- 		<constructor-arg value="activemq-broker" />
- 		<constructor-arg>
- 			<map>
- 				<entry key="connectionsPerHost" value="200"></entry>
- 				<entry key="minConnectionsPerHost" value="10"></entry>
- 			</map>
- 		</constructor-arg>
+ 		<property name="database" value="activemq-broker" />
+ 		<!-- mongo connection properties -->
+ 		<property name="props">
+ 		   <map>
+ 				   <entry key="connectionsPerHost" value="200"></entry>
+ 				   <entry key="minConnectionsPerHost" value="10"></entry>
+ 			   </map>
+ 		</property>
  	</bean>
  </plugins>
 ``` 
