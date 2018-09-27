@@ -35,6 +35,7 @@ public class MongoJobScheduler implements JobScheduler {
 
 	private static final Logger LOG = LoggerFactory.getLogger(MongoJobScheduler.class);
 	private static final IdGenerator ID_GENERATOR = new IdGenerator();
+	private static final Long SCHEDULER_INTERVAL = 60000L;
 
 	private final String name;
 	private final AtomicBoolean started = new AtomicBoolean(false);
@@ -389,7 +390,7 @@ public class MongoJobScheduler implements JobScheduler {
 					}
 					prev = curr;
 					curr = System.currentTimeMillis();
-					diff = 60000 - (curr - prev);
+					diff = SCHEDULER_INTERVAL - (curr - prev);
 					if (diff > 0) {
 						Thread.sleep(diff);
 					}
