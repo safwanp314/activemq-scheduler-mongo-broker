@@ -30,6 +30,7 @@ import com.mongodb.ServerAddress;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
 import com.mongodb.client.model.Filters;
+import com.mongodb.client.model.Indexes;
 
 public class MongoJobScheduler implements JobScheduler {
 
@@ -110,6 +111,7 @@ public class MongoJobScheduler implements JobScheduler {
 		try {
 			if (mongoCollection == null) {
 				mongoCollection = mongo(host, port, props).getDatabase(database).getCollection(name);
+				mongoCollection.createIndex(Indexes.ascending("nextTime"));
 			}
 			return mongoCollection;
 		} catch (Exception e) {
